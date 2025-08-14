@@ -1,9 +1,11 @@
 import express from 'express';
+import morgan from 'morgan';
 
 //rest object
 const app = express();
 
 //middleware
+app.use(morgan('dev'));
 
 //root
 app.get('/', (req, res) => {
