@@ -1,5 +1,9 @@
 import express from 'express';
 import morgan from 'morgan';
+import dotenv from 'dotenv';
+
+//configure dotenv
+dotenv.config();
 
 //rest object
 const app = express();
@@ -13,7 +17,7 @@ app.get('/', (req, res) => {
 });
 
 //port
-const PORT = 8080;
+const PORT = process.env.PORT || 8030;
 
 //server
 app.listen(PORT, () => {
