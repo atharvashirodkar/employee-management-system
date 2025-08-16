@@ -1,5 +1,5 @@
 import express from 'express';
-import {createEmployee, getAllEmployees, getEmployeeById} from '../controller/empController.js';
+import {createEmployee, getAllEmployees, getEmployeeById, updateEmployee} from '../controller/empController.js';
 
 
 //router object
@@ -15,5 +15,8 @@ router.get('/:empId', getEmployeeById);
 
 //Create EMPLOYEE || POST
 router.post('', createEmployee)
+
+//Update EMPLOYEE || PUT
+router.put('/:empId', updateEmployee);
 
 export default router;
