@@ -28,10 +28,18 @@ const getAllEmployees = async (req, res) => {
 
 //GET Employee by ID
 const getEmployeeById = async (req, res) => {
-    const { id } = req.params;
     try {
-        const data = await db.query('SELECT * FROM employees WHERE id = ?', [id]);
-        if (!data[0].length) {
+        const empId = req.params.empId;
+        if (!empId) {
+            return res.status(400).send({
+                success: false,
+                message: "Invalid or Provide Employee Id",
+            });
+        }
+        const [data] = await db.query(`SELECT * FROM employees WHERE id = ?`, [empId]);
+        console.log(data);
+        
+        if (!data[0]) {
             return res.status(404).send({
                 success: false,
                 message: 'Employee not found'
@@ -40,7 +48,7 @@ const getEmployeeById = async (req, res) => {
         res.status(200).send({
             success: true,
             message: 'Employee fetched successfully',
-            data: data[0][0]
+            employeeDetails: data[0]
         });
     } catch (error) {
         console.error(error);
@@ -52,4 +60,4 @@ const getEmployeeById = async (req, res) => {
     }
 }
 
-export {getAllEmployees, getEmployeeById};
+export { getAllEmployees, getEmployeeById };
