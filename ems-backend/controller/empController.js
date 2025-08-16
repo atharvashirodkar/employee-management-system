@@ -1,6 +1,6 @@
 import db from "../config/db.js";
 
-//GET ALL Employees
+//GET ALL EMPLOYEES LIST || GET
 const getAllEmployees = async (req, res) => {
     try {
         const data = await db.query('SELECT * FROM employees');
@@ -38,7 +38,7 @@ const getEmployeeById = async (req, res) => {
         }
         const [data] = await db.query(`SELECT * FROM employees WHERE id = ?`, [empId]);
         console.log(data);
-        
+
         if (!data[0]) {
             return res.status(404).send({
                 success: false,
@@ -58,6 +58,38 @@ const getEmployeeById = async (req, res) => {
             error
         });
     }
-}
+};
 
-export { getAllEmployees, getEmployeeById };
+//CREATE EMPLOYEE
+const createEmployee = async (req, res) => {
+    try {
+        const { name, email, designation, salary, date_joined } = req.body;
+        if (!name || !email || !designation || !salary || !date_joined) {
+            return res.status(400).send({
+                success: false,
+                message: 'All fields are required'
+            });
+        }
+        const data = await db.query(`INSERT INTO employees (name, email, designation, salary, date_joined) VALUES (?, ?, ?, ?, ?)`,
+            [name, email, designation, salary, date_joined]);
+        if (!data) {
+            return res.status(404).send({
+                success: false,
+                message: "Error in INSERT QUERY"
+            });
+        }
+        res.status(201).send({
+            success: true,
+            message: 'Employee created successfully',
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({
+            success: false,
+            message: 'Error while creating employee',
+            error
+        });
+    }
+};
+
+export { getAllEmployees, getEmployeeById, createEmployee };
