@@ -134,5 +134,29 @@ const updateEmployee = async (req, res) => {
     }
 };
 
+//DELETE EMPLOYEE
+const deleteEmployee = async (req, res) => {
+    try {
+        const empId = req.params.empId;
+        if (!empId) {
+            return res.status(404).send({
+                success: false,
+                message: "Invalid or Provide a valid Employee Id",
+            });
+        }
+        await db.query(`DELETE FROM employees WHERE id = ?`, [empId]);
+        res.status(200).send({
+            success: true,
+            message: 'Employee deleted successfully',
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({
+            success: false,
+            message: 'Error while deleting employee',
+            error
+        });
+    }
+};
 
-export { getAllEmployees, getEmployeeById, createEmployee, updateEmployee };
+export { getAllEmployees, getEmployeeById, createEmployee, updateEmployee, deleteEmployee };
