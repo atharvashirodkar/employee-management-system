@@ -92,4 +92,47 @@ const createEmployee = async (req, res) => {
     }
 };
 
-export { getAllEmployees, getEmployeeById, createEmployee };
+//UPDATE EMPLOYEE
+const updateEmployee = async (req, res) => {
+    try {
+        const empId = req.params.empId;
+        if (!empId) {
+            return res.status(404).send({
+                success: false,
+                message: "Invalid or Provide Employee Id",
+            });
+        }
+        const { name, email, designation, salary } = req.body;
+        if (!name && !email && !designation && !salary && !date_joined) {
+            return res.status(400).send({
+                success: false,
+                message: 'At least one field is required for update'
+            });
+        }
+        const [[existingEmployee]] = await db.query(`SELECT * FROM employees WHERE id = ?`, [empId]);
+
+        const updatedName = name || existingEmployee.name;
+        const updatedEmail = email || existingEmployee.email;
+        const updatedDesignation = designation || existingEmployee.designation;
+        const updatedSalary = salary || existingEmployee.salary;
+        const date_joined = existingEmployee.date_joined;
+        await db.query(
+            `UPDATE employees SET name = ?, email = ?, designation = ?, salary = ?, date_joined = ? WHERE id = ?`,
+            [updatedName, updatedEmail, updatedDesignation, updatedSalary, date_joined, empId]);
+        res.status(200).send({
+            success: true,
+            message: 'Employee updated successfully',
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({
+            success: false,
+            message: 'Error while updating employee',
+            error
+        })
+
+    }
+};
+
+
+export { getAllEmployees, getEmployeeById, createEmployee, updateEmployee };
