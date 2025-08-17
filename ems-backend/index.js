@@ -1,6 +1,7 @@
 import express from 'express';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
+import cors from 'cors';
 import mySqlPool from './config/db.js';
 import empRoutes from './routes/empRoutes.js';
 
@@ -13,6 +14,7 @@ const app = express();
 //middleware
 app.use(express.json());
 app.use(morgan('dev'));
+app.use(cors());
 
 //root
 app.use('/api/v1/employees', empRoutes);
