@@ -15,79 +15,129 @@ const ListEmployee = () => {
   }, []);
   return (
     <>
-      <div className="container" style={{ justifyContent: "center"}}>
-        <div
+      <div
         style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "20px"
+          margin: "0 auto",
+          padding: "20px",
+          fontFamily: "Arial, sans-serif",
         }}
+      >
+        {/* Header Section */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: "20px",
+          }}
         >
           <button
-            className="btn btn-primary"
             onClick={() => navigator(-1)}
+            style={{
+              backgroundColor: "#0d6efd",
+              color: "#fff",
+              border: "none",
+              padding: "8px 16px",
+              borderRadius: "6px",
+              cursor: "pointer",
+            }}
           >
             Back
           </button>
-          <h2 style={{
-            textAlign: "center",
-            flexGrow: 1,
-          }}>Employee List</h2>
+
+          <h2 style={{ textAlign: "center", flexGrow: 1, margin: 0 }}>
+            Employee List
+          </h2>
+
           <button
-            className="btn btn-primary"
-            onClick={() => navigator('/employees/add')}
+            onClick={() => navigator("/employees/add")}
+            style={{
+              backgroundColor: "#0d6efd",
+              color: "#fff",
+              border: "none",
+              padding: "8px 16px",
+              borderRadius: "6px",
+              cursor: "pointer",
+            }}
           >
             Add Employee
           </button>
         </div>
-        <div className="row">
-          <table className="table table-bordered">
-            <thead>
-              <tr>
+
+        {/* Table Section */}
+        <table
+          style={{
+            width: "100%",
+            borderCollapse: "collapse",
+            boxShadow: "0 3px 8px rgba(0,0,0,0.1)",
+          }}
+        >
+          <thead>
+            <tr style={{ backgroundColor: "#f1f3f5" }}>
+              {[
+                "Employee ID",
+                "Name",
+                "Email",
+                "Designation",
+                "Salary",
+                "Date Joined",
+                "Actions",
+              ].map((heading) => (
                 <th
-                  className="text-center"
-                >Employee ID</th>
-                <th
-                  className="text-center"
-                >Name</th>
-                <th
-                  className="text-center"
-                >Email</th>
-                <th
-                  className="text-center"
-                >Designation</th>
-                <th
-                  className="text-center"
-                >Salary</th>
-                <th
-                  className="text-center"
-                >Date Joined</th>
-                <th
-                  className="text-center"
-                >Actions</th>
+                  key={heading}
+                  style={{
+                    border: "1px solid #dee2e6",
+                    padding: "10px",
+                    textAlign: "center",
+                  }}
+                >
+                  {heading}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {employees.map((emp) => (
+              <tr key={emp.id} style={{ textAlign: "center" }}>
+                <td style={{ border: "1px solid #dee2e6", padding: "8px" }}>{emp.id}</td>
+                <td style={{ border: "1px solid #dee2e6", padding: "8px" }}>{emp.name}</td>
+                <td style={{ border: "1px solid #dee2e6", padding: "8px" }}>{emp.email}</td>
+                <td style={{ border: "1px solid #dee2e6", padding: "8px" }}>{emp.designation}</td>
+                <td style={{ border: "1px solid #dee2e6", padding: "8px" }}>{emp.salary}</td>
+                <td style={{ border: "1px solid #dee2e6", padding: "8px" }}>
+                  {moment(emp.date_joined).format("DD-MM-YYYY")}
+                </td>
+                <td style={{ border: "1px solid #dee2e6", padding: "8px" }}>
+                  <button
+                    style={{
+                      marginRight: "8px",
+                      backgroundColor: "#198754",
+                      color: "#fff",
+                      border: "none",
+                      padding: "6px 12px",
+                      borderRadius: "5px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Update
+                  </button>
+                  <button
+                    style={{
+                      backgroundColor: "#dc3545",
+                      color: "#fff",
+                      border: "none",
+                      padding: "6px 12px",
+                      borderRadius: "5px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Delete
+                  </button>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {
-                employees.map((emp) => (
-                  <tr key={emp.id}>
-                    <td className="text-center">{emp.id}</td>
-                    <td className="text-center">{emp.name}</td>
-                    <td className="text-center">{emp.email}</td>
-                    <td className="text-center">{emp.designation}</td>
-                    <td className="text-center">{emp.salary}</td>
-                    <td className="text-center">{moment(emp.date_joined).format("DD-MM-YYYY")}</td>
-                    <td className="text-center">
-                      <button>Update</button>
-                      <button>Delete</button>
-                    </td>
-                  </tr>
-                ))
-              }
-            </tbody>
-          </table>
-        </div>
+            ))}
+          </tbody>
+        </table>
       </div>
     </>
   )
