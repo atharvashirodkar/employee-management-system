@@ -1,8 +1,11 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { createEmployee } from "../services/EmployeeService";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { createEmployee, getEmployeeById, updateEmployee } from "../services/EmployeeService";
+import moment from "moment";
 
 const AddUpdateEmployee = () => {
+    const { id } = useParams();
+
     const navigator = useNavigate();
 
     const [name, setName] = useState("");
@@ -10,6 +13,20 @@ const AddUpdateEmployee = () => {
     const [designation, setDesignation] = useState("");
     const [date_joined, setDateJoined] = useState("");
     const [salary, setSalary] = useState("");
+
+    useEffect(() => {
+        if (id) {
+            getEmployeeById(id).then((data) => {
+                setName(data.name);
+                setEmail(data.email);
+                setDesignation(data.designation);
+                setDateJoined(moment(data.date_joined).format("YYYY-MM-DD"));
+                setSalary(data.salary);
+            }).catch((error) => {
+                console.error("Error fetching employee data:", error);
+            });
+        }
+    }, [id]);
 
     const handdleOnSubmit = async (e) => {
         e.preventDefault();
@@ -20,9 +37,14 @@ const AddUpdateEmployee = () => {
             salary,
             date_joined
         };
-        console.log("Submitting employee data:", employeeData);
+        // console.log("Submitting employee data:", employeeData); // Debugging line to check data before submission
         try {
-            await createEmployee(employeeData);
+            if (id) {
+                await updateEmployee(id, employeeData);
+            }
+            else {
+                await createEmployee(employeeData);
+            }
             navigator("/employees");
         } catch (error) {
             console.error("Error adding employee:", error);
@@ -81,7 +103,7 @@ const AddUpdateEmployee = () => {
                                 margin: 0,
                             }}
                         >
-                            Add New Employee
+                            {id ? "Update Employee" :"Add New Employee"}
                         </h2>
                     </div>
 
@@ -150,6 +172,7 @@ const AddUpdateEmployee = () => {
                                 value={date_joined}
                                 onChange={(e) => setDateJoined(e.target.value)}
                                 required
+                                disabled={id ? true : false}
                                 style={{
                                     width: "100%",
                                     padding: "10px",
