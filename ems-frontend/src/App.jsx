@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom"
 import Home from "./pages/Home"
 import ListEmployee from "./pages/ListEmployee"
+import AddUpdateEmployee from "./pages/AddUpdateEmployee"
 
 function App() {
 
@@ -10,6 +11,9 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/employees" element={<ListEmployee />} />
+        <Route path="/add-employee" element={<AddUpdateEmployee />} />
+        {/* <Route path="/update-employee/:id" element={<AddUpdateEmployee />} /> */}
+        <Route path="*" element={<h1>Page Not Found</h1>} />
       </Routes>
       </BrowserRouter>
     </>
