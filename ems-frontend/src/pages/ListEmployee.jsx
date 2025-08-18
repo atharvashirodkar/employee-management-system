@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { getEmployees } from "../services/EmployeeService";
+import { deleteEmployee, getEmployees } from "../services/EmployeeService";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
 
@@ -116,6 +116,7 @@ const ListEmployee = () => {
                       borderRadius: "5px",
                       cursor: "pointer",
                     }}
+                    onClick={() => navigator(`/update-employee/${emp.id}`)}
                   >
                     Update
                   </button>
@@ -128,6 +129,18 @@ const ListEmployee = () => {
                       borderRadius: "5px",
                       cursor: "pointer",
                     }}
+                    onClick={
+                      async () => {
+                        if (window.confirm("Are you sure you want to delete this employee?")) {
+                          try {
+                            await deleteEmployee(emp.id);
+                            setEmployees(employees.filter(e => e.id !== emp.id));
+                          } catch (error) {
+                            console.error("Failed to delete employee:", error);
+                          }
+                        }
+                      }
+                    }
                   >
                     Delete
                   </button>
