@@ -21,3 +21,33 @@ export const createEmployee = async (employeeData) => {
         throw error;
     }
 }
+
+export const updateEmployee = async (id, employeeData) => {
+    try {
+        const response = await axios.put(`${API_BASE_URL}/${id}`, employeeData);
+        return response.data;
+    } catch (error) {
+        console.error("Error updating employee:", error);
+        throw error;
+    }
+}
+
+export const getEmployeeById = async (id) => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/${id}`);
+        return response.data.employeeDetails;
+    } catch (error) {
+        console.error("Error fetching employee by ID:", error);
+        throw error;
+    }
+}
+
+export const deleteEmployee = async (id) => {
+    try {
+        const response = await axios.delete(`${API_BASE_URL}/${id}`);
+        return response.data;
+    } catch (error) {
+        console.error("Error deleting employee:", error);
+        throw error;
+    }
+}
