@@ -22,7 +22,6 @@ const ListEmployee = () => {
           fontFamily: "Arial, sans-serif",
         }}
       >
-        {/* Header Section */}
         <div
           style={{
             display: "flex",
@@ -50,7 +49,7 @@ const ListEmployee = () => {
           </h2>
 
           <button
-            onClick={() => navigator("/employees/add")}
+            onClick={() => navigator("/add-employee")}
             style={{
               backgroundColor: "#0d6efd",
               color: "#fff",
@@ -64,7 +63,6 @@ const ListEmployee = () => {
           </button>
         </div>
 
-        {/* Table Section */}
         <table
           style={{
             width: "100%",
