@@ -6,5 +6,6 @@ export default defineConfig({
   plugins: [react()],
   server:{
     port: 5100,
-  }
+  },
+  base: '/employee-management-system/'
 })
