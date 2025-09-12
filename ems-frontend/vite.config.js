@@ -7,5 +7,5 @@ export default defineConfig({
   server:{
     port: 5100,
   },
-  base: './employee-management-system/'
+  base: '/employee-management-system/'
 })
