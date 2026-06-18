@@ -3,8 +3,9 @@ import db from "../config/db.js";
 //GET ALL EMPLOYEES LIST || GET
 const getAllEmployees = async (req, res) => {
     try {
-        const data = await db.query('SELECT * FROM employees');
-        if (!data) {
+        const [data] = await db.query('SELECT * FROM employees');
+
+        if (data.length === 0) {
             return res.status(404).send({
                 success: false,
                 message: 'No employees found'
@@ -13,15 +14,15 @@ const getAllEmployees = async (req, res) => {
         res.status(200).send({
             success: true,
             message: 'Employees fetched successfully',
-            totalEmployees: data[0].length,
-            data: data[0]
+            totalEmployees: data.length,
+            data: data
         });
+
     } catch (error) {
         console.error(error);
         res.status(500).send({
             success: false,
             message: 'Error while fetching employees',
-            error
         });
     }
 };
@@ -37,9 +38,8 @@ const getEmployeeById = async (req, res) => {
             });
         }
         const [data] = await db.query(`SELECT * FROM employees WHERE id = ?`, [empId]);
-        console.log(data);
 
-        if (!data[0]) {
+        if (data.length === 0) {
             return res.status(404).send({
                 success: false,
                 message: 'Employee not found'
@@ -54,8 +54,7 @@ const getEmployeeById = async (req, res) => {
         console.error(error);
         res.status(500).send({
             success: false,
-            message: 'Error while fetching employee',
-            error
+            message: 'Error while fetching employee'
         });
     }
 };
@@ -70,9 +69,9 @@ const createEmployee = async (req, res) => {
                 message: 'All fields are required'
             });
         }
-        const data = await db.query(`INSERT INTO employees (name, email, designation, salary, date_joined) VALUES (?, ?, ?, ?, ?)`,
+        const [result] = await db.query(`INSERT INTO employees (name, email, designation, salary, date_joined) VALUES (?, ?, ?, ?, ?)`,
             [name, email, designation, salary, date_joined]);
-        if (!data) {
+        if (result.affectedRows === 0) {
             return res.status(404).send({
                 success: false,
                 message: "Error in INSERT QUERY"
@@ -87,7 +86,6 @@ const createEmployee = async (req, res) => {
         res.status(500).send({
             success: false,
             message: 'Error while creating employee',
-            error
         });
     }
 };
@@ -103,7 +101,8 @@ const updateEmployee = async (req, res) => {
             });
         }
         const { name, email, designation, salary } = req.body;
-        if (!name && !email && !designation && !salary && !date_joined) {
+
+        if (!name && !email && !designation && !salary) {
             return res.status(400).send({
                 success: false,
                 message: 'At least one field is required for update'
@@ -111,14 +110,29 @@ const updateEmployee = async (req, res) => {
         }
         const [[existingEmployee]] = await db.query(`SELECT * FROM employees WHERE id = ?`, [empId]);
 
+        if (!existingEmployee) {
+            return res.status(404).send({
+                success: false,
+                message: "Employee not found"
+            });
+        }
+
         const updatedName = name || existingEmployee.name;
         const updatedEmail = email || existingEmployee.email;
         const updatedDesignation = designation || existingEmployee.designation;
         const updatedSalary = salary || existingEmployee.salary;
         const date_joined = existingEmployee.date_joined;
-        await db.query(
+
+        const [result] = await db.query(
             `UPDATE employees SET name = ?, email = ?, designation = ?, salary = ?, date_joined = ? WHERE id = ?`,
             [updatedName, updatedEmail, updatedDesignation, updatedSalary, date_joined, empId]);
+
+        if (result.affectedRows === 0) {
+            return res.status(400).send({
+                success: false,
+                message: "Employee update failed"
+            });
+        }
         res.status(200).send({
             success: true,
             message: 'Employee updated successfully',
@@ -128,7 +142,6 @@ const updateEmployee = async (req, res) => {
         res.status(500).send({
             success: false,
             message: 'Error while updating employee',
-            error
         })
 
     }
@@ -138,13 +151,22 @@ const updateEmployee = async (req, res) => {
 const deleteEmployee = async (req, res) => {
     try {
         const empId = req.params.empId;
-        if (!empId) {
+        const [data] = await db.query(`SELECT * FROM employees WHERE id = ?`, [empId]);
+        if (data.length == 0) {
             return res.status(404).send({
                 success: false,
-                message: "Invalid or Provide a valid Employee Id",
+                message: "Provide a valid Employee Id"
             });
         }
-        await db.query(`DELETE FROM employees WHERE id = ?`, [empId]);
+
+        const [result] = await db.query(`DELETE FROM employees WHERE id = ?`, [empId]);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).send({
+                success: false,
+                message: "Employee could not be deleted"
+            });
+        }
         res.status(200).send({
             success: true,
             message: 'Employee deleted successfully',
@@ -154,7 +176,6 @@ const deleteEmployee = async (req, res) => {
         res.status(500).send({
             success: false,
             message: 'Error while deleting employee',
-            error
         });
     }
 };
