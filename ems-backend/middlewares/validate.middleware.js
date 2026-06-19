@@ -1,7 +1,8 @@
-const validate = (schema) => {
+const validate = (schema, source="body") => {
 
     return (req, res, next) => {
-        const { error } = schema.validate(req.body);
+        const { error, value } = schema.validate(req[source]);
+        let queryData         
 
         if (error) {
             res.status(400).send({
@@ -9,6 +10,9 @@ const validate = (schema) => {
                 message: error.details[0].message
             });
         }
+
+        req.queryData = value;
+
         next();
     }
 }
