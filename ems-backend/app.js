@@ -1,7 +1,7 @@
 import express from 'express';
 import morgan from 'morgan';
 import cors from 'cors';
-import empRoutes from './routes/empRoutes.js';
+import empRoutes from './routes/employee.routes.js';
 
 const app = express();
 
