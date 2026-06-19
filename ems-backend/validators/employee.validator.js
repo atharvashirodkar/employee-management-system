@@ -8,4 +8,16 @@ const createEmployeeSchema = Joi.object({
     date_joined: Joi.date().required()
 })
 
-export {createEmployeeSchema}
+const paginationSchema = Joi.object({
+    page: Joi.number()
+        .integer()
+        .min(1)
+        .default(1),
+
+    limit: Joi.number()
+        .integer()
+        .min(1)
+        .default(5)
+});
+
+export { createEmployeeSchema, paginationSchema }

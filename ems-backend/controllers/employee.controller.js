@@ -3,7 +3,12 @@ import db from "../config/db.js";
 //GET ALL EMPLOYEES LIST || GET
 const getAllEmployees = async (req, res) => {
     try {
-        const [data] = await db.query('SELECT * FROM employees');
+        
+        const {page, limit } = req.queryData
+
+        const offset = (page - 1) * limit;
+
+        const [data] = await db.query('SELECT * FROM employees LIMIT ? OFFSET ?', [limit, offset]);
 
         if (data.length === 0) {
             return res.status(404).send({
@@ -11,10 +16,19 @@ const getAllEmployees = async (req, res) => {
                 message: 'No employees found'
             });
         }
+
+        const [rows] = await db.query('SELECT COUNT(*) AS total FROM employees')
+        const total = rows[0].total;
+
+        const totalPages = Math.ceil(total / limit)
+
         res.status(200).send({
             success: true,
             message: 'Employees fetched successfully',
-            totalEmployees: data.length,
+            page: page,
+            limit: limit,
+            totalEmployees: total,
+            totalPages: totalPages,
             data: data
         });
 

@@ -1,7 +1,7 @@
 import express from 'express';
 import {createEmployee, deleteEmployee, getAllEmployees, getEmployeeById, updateEmployee} from '../controllers/employee.controller.js';
 import validate from "../middlewares/validate.middleware.js";
-import { createEmployeeSchema } from "../validators/employee.validator.js";
+import { createEmployeeSchema, paginationSchema } from "../validators/employee.validator.js";
 
 //router object
 const router = express.Router();
@@ -9,13 +9,13 @@ const router = express.Router();
 //routes
 
 //GET ALL EMPLOYEES LIST || GET
-router.get('', getAllEmployees);
+router.get('', validate(paginationSchema, "query"), getAllEmployees);
 
 //GET EMPLOYEE BY ID || GET
 router.get('/:empId', getEmployeeById);
 
 //Create EMPLOYEE || POST
-router.post('', validate(createEmployeeSchema), createEmployee)
+router.post('', validate(createEmployeeSchema, "body"), createEmployee)
 
 //Update EMPLOYEE || PUT
 router.put('/:empId', updateEmployee);
