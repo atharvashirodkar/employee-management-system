@@ -1,6 +1,7 @@
 import express from 'express';
-import {createEmployee, deleteEmployee, getAllEmployees, getEmployeeById, updateEmployee} from '../controller/empController.js';
-
+import {createEmployee, deleteEmployee, getAllEmployees, getEmployeeById, updateEmployee} from '../controllers/employee.controller.js';
+import validate from "../middlewares/validate.middleware.js";
+import { createEmployeeSchema } from "../validators/employee.validator.js";
 
 //router object
 const router = express.Router();
@@ -14,7 +15,7 @@ router.get('', getAllEmployees);
 router.get('/:empId', getEmployeeById);
 
 //Create EMPLOYEE || POST
-router.post('', createEmployee)
+router.post('', validate(createEmployeeSchema), createEmployee)
 
 //Update EMPLOYEE || PUT
 router.put('/:empId', updateEmployee);
