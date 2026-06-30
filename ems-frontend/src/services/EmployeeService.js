@@ -1,8 +1,5 @@
 import axios from 'axios';
-
-const API_BASE_URL = 'http://localhost:8080/api/v1/employees';
-//For local testing, uncomment following api base URL and add IPv4 address of your machine
-// const API_BASE_URL = 'http://192.168.0.106:8080/api/v1/employees';
+import { API_BASE_URL } from '../constants/api';
 
 export const getEmployees = async () => {
     try {
