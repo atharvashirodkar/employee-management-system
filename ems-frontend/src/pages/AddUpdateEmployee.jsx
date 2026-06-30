@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { createEmployee, getEmployeeById, updateEmployee } from "../services/EmployeeService";
-import moment from "moment";
 
 const AddUpdateEmployee = () => {
     const { id } = useParams();
@@ -20,7 +19,7 @@ const AddUpdateEmployee = () => {
                 setName(data.name);
                 setEmail(data.email);
                 setDesignation(data.designation);
-                setDateJoined(moment(data.date_joined).format("YYYY-MM-DD"));
+                setDateJoined(new Intl.DateTimeFormat("en-IN").format(new Date(data.date_joined)));
                 setSalary(data.salary);
             }).catch((error) => {
                 console.error("Error fetching employee data:", error);
@@ -28,7 +27,7 @@ const AddUpdateEmployee = () => {
         }
     }, [id]);
 
-    const handdleOnSubmit = async (e) => {
+    const handdleSubmit = async (e) => {
         e.preventDefault();
         const employeeData = {
             name,
@@ -37,7 +36,7 @@ const AddUpdateEmployee = () => {
             salary,
             date_joined
         };
-        // console.log("Submitting employee data:", employeeData); // Debugging line to check data before submission
+
         try {
             if (id) {
                 await updateEmployee(id, employeeData);
@@ -108,7 +107,7 @@ const AddUpdateEmployee = () => {
                     </div>
 
 
-                    <form onSubmit={handdleOnSubmit}>
+                    <form onSubmit={handdleSubmit}>
                         <div style={{ marginBottom: "1rem" }}>
                             <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "bold" }}>
                                 Name:

@@ -1,18 +1,47 @@
 import { useEffect, useState } from "react"
 import { deleteEmployee, getEmployees } from "../services/EmployeeService";
 import { useNavigate } from "react-router-dom";
-import moment from "moment";
 
 const ListEmployee = () => {
   const [employees, setEmployees] = useState([]);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const navigator = useNavigate();
 
+  const fetchEmployees = async () => {
+    try {
+
+      setError(null);
+      setLoading(true);
+
+      const response = await getEmployees();
+      setEmployees(response.data.data);
+
+    } catch (error) {
+      console.error(error)
+      setError("Failed to fetch employees data")
+    } finally {
+      setLoading(false);
+    }
+  }
+
   useEffect(() => {
-    getEmployees().then((data) => {
-      setEmployees(data);
-    })
+    fetchEmployees()
   }, []);
+
+  if (loading) {
+    return <h2>Loading employees...</h2>;
+  }
+
+  if (error) {
+    return <h2>{error}</h2>;
+  }
+
+  if (employees.length === 0) {
+    return <h2>No employees found.</h2>;
+  }
+
   return (
     <>
       <div
@@ -103,7 +132,7 @@ const ListEmployee = () => {
                 <td style={{ border: "1px solid #dee2e6", padding: "8px" }}>{emp.designation}</td>
                 <td style={{ border: "1px solid #dee2e6", padding: "8px" }}>{emp.salary}</td>
                 <td style={{ border: "1px solid #dee2e6", padding: "8px" }}>
-                  {moment(emp.date_joined).format("DD-MM-YYYY")}
+                  {new Intl.DateTimeFormat("en-IN").format(new Date(emp.date_joined))}
                 </td>
                 <td style={{ border: "1px solid #dee2e6", padding: "8px" }}>
                   <button
