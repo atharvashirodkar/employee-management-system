@@ -4,7 +4,7 @@ import { API_BASE_URL } from '../constants/api';
 export const getEmployees = async () => {
     try {
         const response = await axios.get(API_BASE_URL);
-        return response.data.data;
+        return response;
     } catch (error) {
         console.error("Error fetching employees:", error);
         throw error;
