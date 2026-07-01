@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { createEmployee, getEmployeeById, updateEmployee } from "../services/EmployeeService";
+import EmployeeForm from "../components/employee/EmployeeForm";
 
 const AddUpdateEmployee = () => {
     const { id } = useParams();
@@ -12,6 +13,7 @@ const AddUpdateEmployee = () => {
     const [designation, setDesignation] = useState("");
     const [date_joined, setDateJoined] = useState("");
     const [salary, setSalary] = useState("");
+    let isEdit
 
     useEffect(() => {
         if (id) {
@@ -19,15 +21,15 @@ const AddUpdateEmployee = () => {
                 setName(data.name);
                 setEmail(data.email);
                 setDesignation(data.designation);
-                setDateJoined(new Intl.DateTimeFormat("en-IN").format(new Date(data.date_joined)));
                 setSalary(data.salary);
+                setDateJoined(new Date(data.date_joined).toISOString().split("T")[0]);
             }).catch((error) => {
                 console.error("Error fetching employee data:", error);
             });
         }
     }, [id]);
 
-    const handdleSubmit = async (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         const employeeData = {
             name,
@@ -46,8 +48,12 @@ const AddUpdateEmployee = () => {
             }
             navigator("/employees");
         } catch (error) {
-            console.error("Error adding employee:", error);
+            console.error("Error while creating employee:", error);
         }
+    }
+
+    if (id) {
+        isEdit = true
     }
 
     return (
@@ -102,120 +108,25 @@ const AddUpdateEmployee = () => {
                                 margin: 0,
                             }}
                         >
-                            {id ? "Update Employee" :"Add New Employee"}
+                            {id ? "Update Employee" : "Add New Employee"}
                         </h2>
                     </div>
 
 
-                    <form onSubmit={handdleSubmit}>
-                        <div style={{ marginBottom: "1rem" }}>
-                            <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "bold" }}>
-                                Name:
-                            </label>
-                            <input
-                                type="text"
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                                required
-                                style={{
-                                    width: "100%",
-                                    padding: "10px",
-                                    borderRadius: "6px",
-                                    border: "1px solid #ced4da",
-                                }}
-                            />
-                        </div>
-
-                        <div style={{ marginBottom: "1rem" }}>
-                            <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "bold" }}>
-                                Email:
-                            </label>
-                            <input
-                                type="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                required
-                                style={{
-                                    width: "100%",
-                                    padding: "10px",
-                                    borderRadius: "6px",
-                                    border: "1px solid #ced4da",
-                                }}
-                            />
-                        </div>
-
-                        <div style={{ marginBottom: "1rem" }}>
-                            <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "bold" }}>
-                                Designation:
-                            </label>
-                            <input
-                                type="text"
-                                value={designation}
-                                onChange={(e) => setDesignation(e.target.value)}
-                                required
-                                style={{
-                                    width: "100%",
-                                    padding: "10px",
-                                    borderRadius: "6px",
-                                    border: "1px solid #ced4da",
-                                }}
-                            />
-                        </div>
-
-                        <div style={{ marginBottom: "1rem" }}>
-                            <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "bold" }}>
-                                Date Joined:
-                            </label>
-                            <input
-                                type="date"
-                                value={date_joined}
-                                onChange={(e) => setDateJoined(e.target.value)}
-                                required
-                                disabled={id ? true : false}
-                                style={{
-                                    width: "100%",
-                                    padding: "10px",
-                                    borderRadius: "6px",
-                                    border: "1px solid #ced4da",
-                                }}
-                            />
-                        </div>
-
-                        <div style={{ marginBottom: "1.5rem" }}>
-                            <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "bold" }}>
-                                Salary:
-                            </label>
-                            <input
-                                type="number"
-                                value={salary}
-                                onChange={(e) => setSalary(e.target.value)}
-                                required
-                                style={{
-                                    width: "100%",
-                                    padding: "10px",
-                                    borderRadius: "6px",
-                                    border: "1px solid #ced4da",
-                                }}
-                            />
-                        </div>
-
-                        <button
-                            type="submit"
-                            style={{
-                                width: "100%",
-                                padding: "12px",
-                                backgroundColor: "#0d6efd",
-                                color: "#fff",
-                                border: "none",
-                                borderRadius: "8px",
-                                cursor: "pointer",
-                                fontSize: "1rem",
-                                fontWeight: "bold",
-                            }}
-                        >
-                            Add Employee
-                        </button>
-                    </form>
+                    <EmployeeForm
+                        name={name}
+                        email={email}
+                        designation={designation}
+                        salary={salary}
+                        dateJoined={date_joined}
+                        setName={setName}
+                        setEmail={setEmail}
+                        setDesignation={setDesignation}
+                        setSalary={setSalary}
+                        setDateJoined={setDateJoined}
+                        onSubmit={handleSubmit}
+                        buttonText={isEdit ? "Update" : "Save"}
+                    />
                 </div>
             </div>
         </>
