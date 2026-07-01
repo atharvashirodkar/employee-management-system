@@ -1,13 +1,17 @@
 import { useEffect, useState } from "react"
 import { deleteEmployee, getEmployees } from "../services/EmployeeService";
 import { useNavigate } from "react-router-dom";
+import LoadingState from "../components/common/LoadingState";
+import EmptyState from "../components/common/EmptyState";
+import ErrorState from "../components/common/ErrorState";
+import EmployeeTable from "../components/employee/EmployeeTable";
 
 const ListEmployee = () => {
   const [employees, setEmployees] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const navigator = useNavigate();
+  const navigate = useNavigate();
 
   const fetchEmployees = async () => {
     try {
@@ -31,15 +35,32 @@ const ListEmployee = () => {
   }, []);
 
   if (loading) {
-    return <h2>Loading employees...</h2>;
+    return <LoadingState message="Loading Employees..." />;
   }
 
   if (error) {
-    return <h2>{error}</h2>;
+    return <ErrorState message={error} />;
   }
 
   if (employees.length === 0) {
-    return <h2>No employees found.</h2>;
+    return <EmptyState message="No employees found." />;
+  }
+
+  const handleEdit = (id) => {
+    navigate(`/update-employee/${id}`)
+  }
+
+  const handleDelete = async (id) => {
+    if (window.confirm("Are you sure you want to delete this employee?")) {
+      try {
+        await deleteEmployee(id);
+        setEmployees((prev) =>
+          prev.filter((employee) => employee.id !== id));
+      } catch (error) {
+        console.error("Failed to delete employee:", error);
+
+      }
+    }
   }
 
   return (
@@ -60,7 +81,7 @@ const ListEmployee = () => {
           }}
         >
           <button
-            onClick={() => navigator(-1)}
+            onClick={() => navigate(-1)}
             style={{
               backgroundColor: "#0d6efd",
               color: "#fff",
@@ -78,7 +99,7 @@ const ListEmployee = () => {
           </h2>
 
           <button
-            onClick={() => navigator("/add-employee")}
+            onClick={() => navigate("/add-employee")}
             style={{
               backgroundColor: "#0d6efd",
               color: "#fff",
@@ -91,93 +112,7 @@ const ListEmployee = () => {
             Add Employee
           </button>
         </div>
-
-        <table
-          style={{
-            width: "100%",
-            borderCollapse: "collapse",
-            boxShadow: "0 3px 8px rgba(0,0,0,0.1)",
-          }}
-        >
-          <thead>
-            <tr style={{ backgroundColor: "#f1f3f5" }}>
-              {[
-                "Employee ID",
-                "Name",
-                "Email",
-                "Designation",
-                "Salary",
-                "Date Joined",
-                "Actions",
-              ].map((heading) => (
-                <th
-                  key={heading}
-                  style={{
-                    border: "1px solid #dee2e6",
-                    padding: "10px",
-                    textAlign: "center",
-                  }}
-                >
-                  {heading}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {employees.map((emp) => (
-              <tr key={emp.id} style={{ textAlign: "center" }}>
-                <td style={{ border: "1px solid #dee2e6", padding: "8px" }}>{emp.id}</td>
-                <td style={{ border: "1px solid #dee2e6", padding: "8px" }}>{emp.name}</td>
-                <td style={{ border: "1px solid #dee2e6", padding: "8px" }}>{emp.email}</td>
-                <td style={{ border: "1px solid #dee2e6", padding: "8px" }}>{emp.designation}</td>
-                <td style={{ border: "1px solid #dee2e6", padding: "8px" }}>{emp.salary}</td>
-                <td style={{ border: "1px solid #dee2e6", padding: "8px" }}>
-                  {new Intl.DateTimeFormat("en-IN").format(new Date(emp.date_joined))}
-                </td>
-                <td style={{ border: "1px solid #dee2e6", padding: "8px" }}>
-                  <button
-                    style={{
-                      marginRight: "8px",
-                      backgroundColor: "#198754",
-                      color: "#fff",
-                      border: "none",
-                      padding: "6px 12px",
-                      borderRadius: "5px",
-                      cursor: "pointer",
-                    }}
-                    onClick={() => navigator(`/update-employee/${emp.id}`)}
-                  >
-                    Update
-                  </button>
-                  <button
-                    style={{
-                      backgroundColor: "#dc3545",
-                      color: "#fff",
-                      border: "none",
-                      padding: "6px 12px",
-                      borderRadius: "5px",
-                      cursor: "pointer",
-                    }}
-                    onClick={
-                      async () => {
-                        if (window.confirm("Are you sure you want to delete this employee?")) {
-                          try {
-                            await deleteEmployee(emp.id);
-                            setEmployees(employees.filter(e => e.id !== emp.id));
-                          } catch (error) {
-                            console.error("Failed to delete employee:", error);
-                          }
-                        }
-                      }
-                    }
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <EmployeeTable employees={employees} onEdit={handleEdit} onDelete={handleDelete} />
       </div>
     </>
   )
