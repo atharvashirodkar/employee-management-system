@@ -1,10 +1,9 @@
 import axios from 'axios';
 import { API_BASE_URL } from '../constants/api';
 
-export const getEmployees = async () => {
+export const getEmployees = async (page = 1, limit = 5) => {
     try {
-        const response = await axios.get(API_BASE_URL);
-        return response;
+        return await axios.get(`${API_BASE_URL}?page=${page}&limit=${limit}`);
     } catch (error) {
         console.error("Error fetching employees:", error);
         throw error;

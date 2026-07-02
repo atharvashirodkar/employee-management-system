@@ -5,22 +5,31 @@ import LoadingState from "../components/common/LoadingState";
 import EmptyState from "../components/common/EmptyState";
 import ErrorState from "../components/common/ErrorState";
 import EmployeeTable from "../components/employee/EmployeeTable";
+import { useCallback } from "react";
 
 const ListEmployee = () => {
   const [employees, setEmployees] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // Pagination states
+  const [page, setPage] = useState(1);
+  const [limit] = useState(5);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalEmployees, setTotalEmployees] = useState(0);
+
   const navigate = useNavigate();
 
-  const fetchEmployees = async () => {
+  const fetchEmployees = useCallback(async () => {
     try {
 
       setError(null);
       setLoading(true);
 
-      const response = await getEmployees();
+      const response = await getEmployees(page, limit);
       setEmployees(response.data.data);
+      setTotalPages(response.data.totalPages)
+      setTotalEmployees(response.data.totalEmployees)
 
     } catch (error) {
       console.error(error)
@@ -28,11 +37,11 @@ const ListEmployee = () => {
     } finally {
       setLoading(false);
     }
-  }
+  }, [page, limit]);
 
   useEffect(() => {
     fetchEmployees()
-  }, []);
+  }, [fetchEmployees]);
 
   if (loading) {
     return <LoadingState message="Loading Employees..." />;
@@ -48,6 +57,26 @@ const ListEmployee = () => {
 
   const handleEdit = (id) => {
     navigate(`/update-employee/${id}`)
+  }
+
+  const handlePrevious = () => {
+    if (page > 1) {
+      setPage((prev) => prev - 1)
+    }
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }
+
+  const handleNext = () => {
+    if (page < totalPages) {
+      setPage((prev) => prev + 1)
+    }
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
   }
 
   const handleDelete = async (id) => {
@@ -112,7 +141,35 @@ const ListEmployee = () => {
             Add Employee
           </button>
         </div>
+        <h3>Total Employees: {totalEmployees}</h3>
         <EmployeeTable employees={employees} onEdit={handleEdit} onDelete={handleDelete} />
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "16px",
+            marginTop: "24px",
+          }}
+        >
+          <button
+            onClick={handlePrevious}
+            disabled={page === 1}
+          >
+            Previous
+          </button>
+
+          <div>
+            Page {page} of {totalPages}
+          </div>
+
+          <button
+            onClick={handleNext}
+            disabled={page === totalPages}
+          >
+            Next
+          </button>
+        </div>
       </div>
     </>
   )
