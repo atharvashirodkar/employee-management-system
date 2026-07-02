@@ -25,7 +25,7 @@ const EmployeeTable = ({
                         <td>{employee.email}</td>
                         <td>{employee.designation}</td>
                         <td>{employee.salary}</td>
-                        <td>{employee.date_joined}</td>
+                        <td>{new Date(employee.date_joined).toLocaleDateString('en-GB')}</td>
 
                         <td>
                             <button
